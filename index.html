@@ -3,21 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Job Post Generator PRO</title>
+<title>AI Job Post Generator ULTRA SEO</title>
 
 <style>
-body { font-family: Arial; background:#f5f5f5; padding:20px }
-.container { max-width:900px; margin:auto; background:#fff; padding:20px; border-radius:10px }
-input, textarea { width:100%; padding:10px; margin:8px 0 }
-button { padding:12px 20px; background:#0073aa; color:#fff; border:none; cursor:pointer }
+body { margin:0; font-family: Arial; background:#0b1e3c; color:#fff }
+header { background:#06142b; padding:15px; text-align:center; font-size:22px; font-weight:bold }
+footer { background:#06142b; padding:10px; text-align:center; margin-top:20px }
+.container { max-width:900px; margin:auto; background:#102a56; padding:20px; border-radius:10px; margin-top:20px }
+input, textarea { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px }
+button { padding:12px 20px; background:#1e90ff; color:#fff; border:none; cursor:pointer; border-radius:5px }
 .output { margin-top:20px }
-.preview { border:1px solid #ddd; padding:15px; margin-top:10px }
+.preview { background:#fff; color:#000; padding:15px; margin-top:10px; border-radius:5px }
 </style>
 </head>
 
 <body>
+<header>🚀 AI Job Post Generator (Ultra SEO Version)</header>
+
 <div class="container">
-<h2>AI Job Post Generator (Final Pro Version)</h2>
 
 <input id="company" placeholder="Company Name (Required)">
 <input id="position" placeholder="Job Position (Required)">
@@ -31,6 +34,8 @@ button { padding:12px 20px; background:#0073aa; color:#fff; border:none; cursor:
 
 <div class="output" id="output"></div>
 </div>
+
+<footer>Powered by GetHyrd AI Tool</footer>
 
 <script>
 
@@ -47,6 +52,16 @@ function slugify(text){
     .substring(0,70);
 }
 
+function generateUniqueParagraph(keyword, company, exp, salary){
+  const variations = [
+    `This ${keyword} at ${company} offers strong career growth with competitive salary ${salary}. Candidates with ${exp} experience should apply.`,
+    `${company} is hiring for ${keyword}. This role provides long-term stability and professional growth.`,
+    `If you are looking for ${keyword}, this opportunity at ${company} is ideal with salary ${salary}.`,
+    `${keyword} roles at ${company} are highly in demand. Candidates with ${exp} experience are preferred.`
+  ];
+  return variations[Math.floor(Math.random()*variations.length)];
+}
+
 function generatePost(){
 
 let company = document.getElementById('company').value.trim();
@@ -57,31 +72,26 @@ let salary = document.getElementById('salary').value.trim();
 let link = document.getElementById('link').value.trim();
 let desc = document.getElementById('desc').value.trim();
 
-// VALIDATION
 if(!company || !position || !location){
-  alert("Please fill Company, Position and Location");
+  alert("Required fields missing");
   return;
 }
 
-// CLEAN DATA
 let cleanCompany = cleanText(company);
 let cleanLocation = cleanText(location);
 
 let keyword = `${position} Job in ${cleanLocation}`;
 
-// SEO TITLE
 let title = `🔥 5 Openings: ${position} at ${cleanCompany} in ${cleanLocation} Apply Now`;
 
-// URL
 let permalink = slugify(`${position} job ${cleanLocation} ${cleanCompany}`);
 
-// META
-let metaDesc = `Apply for ${position} at ${cleanCompany} in ${cleanLocation}. Salary ${salary}. Experience ${exp}. Apply now.`;
+let metaDesc = `Apply for ${position} at ${cleanCompany} in ${cleanLocation}. Salary ${salary}. Experience ${exp}. Limited openings apply now.`;
 
-// LONG CONTENT
+// UNIQUE CONTENT (NO REPETITION)
 let longContent = "";
-for(let i=0;i<10;i++){
-  longContent += `<p>The ${keyword} at ${cleanCompany} offers excellent career growth. Candidates with ${exp} experience can apply. This ${keyword} offers salary ${salary} and long-term stability.</p>`;
+for(let i=0;i<8;i++){
+  longContent += `<p>${generateUniqueParagraph(keyword, cleanCompany, exp, salary)}</p>`;
 }
 
 let content = `
@@ -93,8 +103,8 @@ let content = `
 <li>Description</li>
 <li>Responsibilities</li>
 <li>Eligibility</li>
-<li>Salary</li>
-<li>Apply</li>
+<li>Salary & Benefits</li>
+<li>Apply Process</li>
 </ul>
 
 <h2>${keyword}</h2>
@@ -104,58 +114,51 @@ let content = `
 <p><b>Salary:</b> ${salary}</p>
 
 <h3>Job Overview</h3>
-<p>This ${keyword} is a great opportunity for candidates looking for growth in ${cleanCompany}.</p>
+<p>This ${keyword} is a strong opportunity for candidates looking to build a career at ${cleanCompany}.</p>
 
 <h3>Job Description</h3>
 <p>${desc}</p>
 
 ${longContent}
 
-<h3>Responsibilities</h3>
+<h3>Key Responsibilities</h3>
 <ul>
-<li>Handle ${position} tasks</li>
-<li>Work with team</li>
-<li>Maintain quality</li>
+<li>Handle core ${position} tasks</li>
+<li>Work with team members</li>
+<li>Maintain performance standards</li>
 </ul>
 
-<h3>Eligibility</h3>
+<h3>Eligibility Criteria</h3>
 <ul>
-<li>${exp} required</li>
-<li>Relevant skills</li>
+<li>${exp} experience required</li>
+<li>Relevant technical skills</li>
 </ul>
 
-<h3>Salary</h3>
-<p>${salary}</p>
+<h3>Salary and Benefits</h3>
+<p>Salary offered: ${salary} along with growth opportunities.</p>
 
-<h3>Apply</h3>
+<h3>Why Join ${cleanCompany}?</h3>
+<p>${cleanCompany} offers a professional environment, growth opportunities, and industry exposure.</p>
+
+<h3>How to Apply</h3>
 <p><a href="${link}" target="_blank" rel="dofollow">Apply Now</a></p>
 
-<h3>More Jobs</h3>
-<p><a href="https://gethyrd.in" target="_blank" rel="dofollow">Check More Jobs</a></p>
+<h3>Explore More Jobs</h3>
+<p><a href="https://gethyrd.in" target="_blank" rel="dofollow">View More Jobs</a></p>
 
 <img src="https://via.placeholder.com/800" alt="${keyword}">
 
-<p>This ${keyword} is trending. Apply now.</p>
+<p>This ${keyword} is trending among job seekers. Apply today.</p>
 `;
 
-// OUTPUT UI
 let finalOutput = `
-<h3>SEO Title</h3>
-<p>${title}</p>
-
-<h3>Permalink</h3>
-<p>${permalink}</p>
-
-<h3>Meta Description</h3>
-<p>${metaDesc}</p>
-
-<h3>Focus Keyword</h3>
-<p>${keyword}</p>
-
+<h3>SEO Title</h3><p>${title}</p>
+<h3>Permalink</h3><p>${permalink}</p>
+<h3>Meta Description</h3><p>${metaDesc}</p>
+<h3>Focus Keyword</h3><p>${keyword}</p>
 <h3>Copy HTML</h3>
 <textarea style="width:100%;height:250px">${content}</textarea>
 <button onclick="copyContent()">Copy</button>
-
 <h3>Preview</h3>
 <div class="preview">${content}</div>
 `;
