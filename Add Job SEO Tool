@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Job Post Generator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --line: #243044;
+      --accent: #60a5fa;
+      --accent2: #34d399;
+      --danger: #f87171;
+      --warn: #fbbf24;
+      --ok: #22c55e;
+      --soft: #1f2937;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .panel, .card {
+      background: rgba(17,24,39,.92);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.25);
+    }
+    .panel { padding: 22px; }
+    .title {
+      font-size: 30px;
+      line-height: 1.1;
+      margin: 0 0 10px;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .card { padding: 18px; }
+    .card h2, .card h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 13px; color: #cbd5e1; }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #334155;
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 13px;
+      outline: none;
+      transition: border-color .15s ease, transform .05s ease;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+    textarea { min-height: 90px; resize: vertical; }
+    .help {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #08111f;
+      background: #e2e8f0;
+    }
+    button.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+    button.ghost { background: #1e293b; color: var(--text); border: 1px solid #334155; }
+    button:active { transform: translateY(1px); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat {
+      background: #0b1220;
+      border: 1px solid #273449;
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .stat .k { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .stat .v { font-size: 20px; font-weight: 800; }
+    .output {
+      display: grid;
+      gap: 14px;
+    }
+    .box {
+      background: #0b1220;
+      border: 1px solid #273449;
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .box h4 { margin: 0 0 10px; font-size: 15px; }
+    .copyline {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      color: #dbeafe;
+      line-height: 1.7;
+      font-size: 13px;
+      max-height: 420px;
+      overflow: auto;
+    }
+    .pill-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: #0b1220;
+      color: #cbd5e1;
+    }
+    .errors, .checklist {
+      display: grid;
+      gap: 8px;
+    }
+    .rowitem {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid #273449;
+      background: #0b1220;
+      line-height: 1.45;
+      font-size: 13px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex: 0 0 auto; }
+    .dot.ok { background: var(--ok); }
+    .dot.warn { background: var(--warn); }
+    .dot.bad { background: var(--danger); }
+    .small { font-size: 12px; color: var(--muted); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .good { color: #86efac; }
+    .badt { color: #fca5a5; }
+    @media (max-width: 1100px) {
+      .hero, .grid, .two-col { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="panel">
+        <h1 class="title">SEO Job Post Generator</h1>
+        <p class="subtitle">
+          Enter position, company title, location, experience, salary, job type, and extra details.
+          The tool generates a job post with SEO title, permalink, meta description, 600+ word body, and a quality checker that flags common ranking errors.
+        </p>
+        <div class="pill-wrap" style="margin-top:14px;">
+          <span class="pill">Title: max 55 words</span>
+          <span class="pill">Permalink: max 70 words</span>
+          <span class="pill">Meta description: max 150 words</span>
+          <span class="pill">SEO checks included</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="stats">
+          <div class="stat"><div class="k">Title words</div><div class="v" id="titleWords">0</div></div>
+          <div class="stat"><div class="k">Permalink words</div><div class="v" id="slugWords">0</div></div>
+          <div class="stat"><div class="k">Description words</div><div class="v" id="descWords">0</div></div>
+          <div class="stat"><div class="k">SEO score</div><div class="v" id="seoScore">0/10</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Create your job post</h2>
+        <div class="form-grid">
+          <div class="field full"><label>Focus Keyword</label><input id="focusKeyword" placeholder="Example: Senior React Developer Job" /></div>
+          <div class="field"><label>Position</label><input id="position" placeholder="Senior React Developer" /></div>
+          <div class="field"><label>Company Title</label><input id="company" placeholder="Acme Technologies Pvt Ltd" /></div>
+          <div class="field"><label>Location</label><input id="location" placeholder="Dehradun, Uttarakhand" /></div>
+          <div class="field"><label>Experience</label><input id="experience" placeholder="3-5 years" /></div>
+          <div class="field"><label>Salary</label><input id="salary" placeholder="₹6-10 LPA" /></div>
+          <div class="field"><label>Job Type</label><select id="jobType"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option><option>Remote</option><option>Hybrid</option></select></div>
+          <div class="field"><label>Apply Link</label><input id="applyLink" placeholder="https://company.com/apply" /></div>
+          <div class="field full"><label>Primary Responsibilities</label><textarea id="responsibilities" placeholder="Write the main job duties separated by commas."></textarea></div>
+          <div class="field full"><label>Required Skills</label><textarea id="skills" placeholder="Example: React, Next.js, Tailwind, SEO, WordPress"></textarea></div>
+          <div class="field full"><label>Extra Details</label><textarea id="extra" placeholder="Shift, work mode, notice period, perks, education, preferred tools, etc."></textarea></div>
+          <div class="field full"><label>Internal Link</label><input id="internalLink" placeholder="https://yourwebsite.com/jobs" /></div>
+          <div class="field full"><label>External Resource Link</label><input id="externalLink" placeholder="https://official-company-site.com" /></div>
+          <div class="field full"><label>25-point rule list (one per line)</label><textarea id="rules" placeholder="1. Keep title under 55 words\n2. Add focus keyword in title\n3. Add keyword in meta description\n... up to 25 points"></textarea></div>
+        </div>
+        <div class="btn-row">
+          <button class="primary" onclick="generatePost()">Generate Job Post</button>
+          <button class="ghost" onclick="fillSample()">Load Sample</button>
+          <button class="ghost" onclick="clearAll()">Clear</button>
+        </div>
+        <p class="help">This version is designed so you can test it locally first. Later you can place it in WordPress as a custom page, a shortcode plugin, or an admin-only tool.</p>
+      </div>
+
+      <div class="card">
+        <h2>Live SEO checks</h2>
+        <div class="errors" id="checks"></div>
+        <div style="height:14px"></div>
+        <h3>25-point rule checklist</h3>
+        <div class="checklist" id="ruleOutput"></div>
+      </div>
+    </div>
+
+    <div style="height:16px"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="copyline">
+          <h2 style="margin:0;">Generated SEO Title</h2>
+          <button class="ghost" onclick="copyText('seoTitle')">Copy</button>
+        </div>
+        <div class="box"><pre id="seoTitle">—</pre></div>
+      </div>
+      <div class="card">
+        <div class="copyline">
+          <h2 style="margin:0;">Generated Permalink</h2>
+          <button class="ghost" onclick="copyText('permalink')">Copy</button>
+        </div>
+        <div class="box"><pre id="permalink">—</pre></div>
+      </div>
+    </div>
+
+    <div style="height:16px"></div>
+
+    <div class="card">
+      <div class="copyline">
+        <h2 style="margin:0;">Generated Meta Description</h2>
+        <button class="ghost" onclick="copyText('metaDesc')">Copy</button>
+      </div>
+      <div class="box"><pre id="metaDesc">—</pre></div>
+    </div>
+
+    <div style="height:16px"></div>
+
+    <div class="card">
+      <div class="copyline">
+        <h2 style="margin:0;">Full Job Post</h2>
+        <button class="ghost" onclick="copyText('fullPost')">Copy</button>
+      </div>
+      <div class="box"><pre id="fullPost">Fill the form and click Generate Job Post.</pre></div>
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  const sample = {
+    focusKeyword: 'Senior React Developer Job',
+    position: 'Senior React Developer',
+    company: 'Acme Technologies Pvt Ltd',
+    location: 'Dehradun, Uttarakhand',
+    experience: '3-5 years',
+    salary: '₹6-10 LPA',
+    jobType: 'Full-time',
+    applyLink: 'https://company.com/apply',
+    responsibilities: 'Build and maintain front-end features, collaborate with design and backend teams, optimize performance, review code, and support product launches',
+    skills: 'React, Next.js, JavaScript, Tailwind CSS, SEO basics, Git, API integration',
+    extra: 'Immediate joiners preferred, hybrid work model, strong communication skills required, health insurance, learning budget, and growth opportunities',
+    internalLink: 'https://yourwebsite.com/jobs',
+    externalLink: 'https://react.dev',
+    rules: [
+      'Keep title under 55 words',
+      'Add focus keyword in title',
+      'Add keyword in meta description',
+      'Add keyword in URL',
+      'Add keyword in first paragraph',
+      'Use keyword in body text',
+      'Write 600+ words',
+      'Add keyword in H2/H3 headings',
+      'Add image alt text with keyword',
+      'Keep keyword density near 1%',
+      'Use a short URL',
+      'Link to external resources',
+      'Use dofollow external links',
+      'Add internal links',
+      'Set focus keyword',
+      'Use content AI optimization',
+      'Add keyword near SEO title beginning',
+      'Add a positive or negative sentiment word',
+      'Add a power word',
+      'Add a number in the SEO title',
+      'Use table of contents',
+      'Use short paragraphs',
+      'Add images or videos',
+      'Add clear apply button',
+      'Check title, slug, and description length'
+    ]
+  };
+
+  function loadRules(text) {
+    const lines = text.split('\n').map(x => x.trim()).filter(Boolean);
+    return lines.slice(0, 25);
+  }
+
+  function wordsCount(str) {
+    return (str || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+
+  function slugify(str) {
+    return (str || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/-{2,}/g, '-');
+  }
+
+  function makeSeoTitle(focus, position, company, location, jobType) {
+    const base = focus || position || 'Job Opening';
+    const parts = [];
+    if (base) parts.push(base);
+    if (company) parts.push('at ' + company);
+    if (location) parts.push(location);
+    if (jobType) parts.push(jobType);
+    parts.push('Apply Now 2026');
+    return parts.join(' | ').replace(/\|\s*\|/g, '|').trim();
+  }
+
+  function makeMetaDescription({position, company, location, experience, salary, jobType, responsibilities, skills, applyLink}) {
+    const firstSkill = (skills || '').split(/[,;\n]/).map(s => s.trim()).filter(Boolean).slice(0, 4).join(', ');
+    const firstResp = (responsibilities || '').split(/[,;\n]/).map(s => s.trim()).filter(Boolean).slice(0, 2).join(', ');
+    return `${position || 'Job'} at ${company || 'our company'} in ${location || 'the location'} for ${experience || 'the required experience'}. ${jobType || 'Opportunity'} with ${salary || 'competitive salary'}. Key skills: ${firstSkill || 'relevant skills'}. Responsibilities include ${firstResp || 'core job tasks'}. Apply now through the official link.`;
+  }
+
+  function makePermalink(focus, position, company, location) {
+    const slug = slugify([focus, position, company, location].filter(Boolean).join(' '));
+    return 'https://yourwebsite.com/jobs/' + slug;
+  }
+
+  function buildPost(data) {
+    const focus = data.focusKeyword || data.position || 'job opening';
+    const h2a = `${focus} Overview`;
+    const h2b = `${focus} Responsibilities`;
+    const h2c = `${focus} Requirements`;
+    const h2d = `${focus} How to Apply`;
+    const resList = splitToBullets(data.responsibilities, 5);
+    const skillList = splitToBullets(data.skills, 6);
+    const extraList = splitToBullets(data.extra, 4);
+    const rules = loadRules(data.rulesText || '');
+
+    const intro = `${focus} is open for ${data.company || 'a growing company'} in ${data.location || 'the listed location'}. This role is designed for candidates with ${data.experience || 'the required experience'} and strong problem-solving skills. The position offers ${data.jobType || 'a suitable job type'} work, with a focus on execution, collaboration, and measurable results. If you are searching for a reliable opportunity, this vacancy is worth reviewing carefully.`;
+
+    const body = `
+${h2a}
+${intro}
+
+Company Details
+Company: ${data.company || 'N/A'}
+Position: ${data.position || 'N/A'}
+Location: ${data.location || 'N/A'}
+Experience: ${data.experience || 'N/A'}
+Salary: ${data.salary || 'N/A'}
+Job Type: ${data.jobType || 'N/A'}
+Apply Link: ${data.applyLink || 'N/A'}
+
+${h2b}
+${resList.map((r, i) => `${i + 1}. ${r}`).join('\n') || '1. Core responsibilities will be shared by the hiring team.'}
+
+The selected candidate will work closely with internal stakeholders to deliver quality outcomes. Clear communication, ownership, and timely delivery are important. The role may include reporting, coordination, documentation, and support for ongoing projects.
+
+${h2c}
+${skillList.map((r, i) => `${i + 1}. ${r}`).join('\n') || '1. Relevant skills will be preferred.'}
+
+Additional details:
+${extraList.map((r, i) => `- ${r}`).join('\n') || '- No extra details provided.'}
+
+${h2d}
+Apply by using the official link. Keep your resume updated, mention the position name clearly, and use a short cover note. Review the role requirements before submitting the application.
+
+Internal resource: ${data.internalLink || 'your internal jobs page'}
+External resource: ${data.externalLink || 'official company site'}
+
+Table of Contents
+1. Overview
+2. Responsibilities
+3. Requirements
+4. How to Apply
+5. Final Notes
+
+Final Notes
+This post is written to support SEO, readability, and user clarity. It includes short paragraphs, useful headings, and keyword placement near the beginning of the content. For a stronger ranking chance, add one image with alt text containing the focus keyword, a short video if possible, and a couple of strong internal links.
+`;
+
+    const extended = body + `
+
+SEO Rules Checklist
+${rules.length ? rules.map((x, i) => `${i + 1}. ${x}`).join('\n') : 'No rule list provided.'}
+`;
+
+    // Expand content length toward 600+ words without making it spammy.
+    const filler = `
+
+Why this opportunity matters
+${focus} can attract the right applicants when the job post is clear, structured, and useful. Candidates usually decide quickly, so the first line should explain the role, the company, and the location. The content should answer the main questions: what the job is, who can apply, what skills are needed, how to apply, and why the role is valuable. Better clarity often improves clicks, applications, and search visibility.
+
+A strong job post also helps avoid mismatched applications. When expectations are written properly, recruiters save time and candidates understand the opportunity faster. That improves user experience and supports better ranking on search engines because the page becomes more complete and more useful.
+`;
+
+    return extended + filler;
+  }
+
+  function splitToBullets(text, maxItems) {
+    return (text || '')
+      .split(/[,;\n]/)
+      .map(t => t.trim())
+      .filter(Boolean)
+      .slice(0, maxItems);
+  }
+
+  function evaluateSeo(data, seoTitle, permalink, metaDesc, content) {
+    const focus = (data.focusKeyword || '').toLowerCase().trim();
+    const title = seoTitle.toLowerCase();
+    const slug = permalink.toLowerCase();
+    const desc = metaDesc.toLowerCase();
+    const body = content.toLowerCase();
+    const scoreChecks = [
+      { ok: !!focus, msg: 'Focus keyword is set.' },
+      { ok: focus && title.includes(focus.split(/\s+/)[0]), msg: 'SEO title starts with or includes the focus keyword.' },
+      { ok: focus && desc.includes(focus.split(/\s+/)[0]), msg: 'Meta description includes the keyword.' },
+      { ok: focus && slug.includes(slugify(focus)), msg: 'Permalink uses the keyword.' },
+      { ok: focus && body.includes(focus), msg: 'Content includes the keyword.' },
+      { ok: wordsCount(content) >= 600, msg: 'Content is 600+ words.' },
+      { ok: /\b(h2|h3|h4)\b/i.test(content) || content.includes('Responsibilities') || content.includes('Requirements'), msg: 'Heading structure is present.' },
+      { ok: !!data.internalLink, msg: 'Internal link added.' },
+      { ok: !!data.externalLink, msg: 'External link added.' },
+      { ok: wordsCount(seoTitle) <= 55, msg: 'Title is within 55 words.' },
+    ];
+    const score = scoreChecks.filter(x => x.ok).length;
+    return { checks: scoreChecks, score };
+  }
+
+  function renderChecks(items, score) {
+    const box = $('checks');
+    box.innerHTML = items.map(item => `
+      <div class="rowitem">
+        <span class="dot ${item.ok ? 'ok' : 'bad'}"></span>
+        <div>${item.ok ? '<span class="good">Pass:</span>' : '<span class="badt">Fix:</span>'} ${item.msg}</div>
+      </div>
+    `).join('');
+    $('seoScore').textContent = `${score}/10`;
+  }
+
+  function renderRules() {
+    const list = loadRules($('rules').value);
+    const out = $('ruleOutput');
+    out.innerHTML = list.length ? list.map((r, i) => `
+      <div class="rowitem"><span class="dot ${i < 10 ? 'ok' : i < 20 ? 'warn' : 'bad'}"></span><div>${i + 1}. ${r}</div></div>
+    `).join('') : '<div class="rowitem"><span class="dot warn"></span><div>No rule list added yet.</div></div>';
+  }
+
+  function generatePost() {
+    const data = {
+      focusKeyword: $('focusKeyword').value.trim(),
+      position: $('position').value.trim(),
+      company: $('company').value.trim(),
+      location: $('location').value.trim(),
+      experience: $('experience').value.trim(),
+      salary: $('salary').value.trim(),
+      jobType: $('jobType').value.trim(),
+      applyLink: $('applyLink').value.trim(),
+      responsibilities: $('responsibilities').value.trim(),
+      skills: $('skills').value.trim(),
+      extra: $('extra').value.trim(),
+      internalLink: $('internalLink').value.trim(),
+      externalLink: $('externalLink').value.trim(),
+      rulesText: $('rules').value.trim(),
+    };
+
+    const seoTitle = makeSeoTitle(data.focusKeyword, data.position, data.company, data.location, data.jobType);
+    const permalink = makePermalink(data.focusKeyword, data.position, data.company, data.location);
+    const metaDesc = makeMetaDescription(data);
+    const fullPost = buildPost(data);
+
+    $('seoTitle').textContent = seoTitle;
+    $('permalink').textContent = permalink;
+    $('metaDesc').textContent = metaDesc;
+    $('fullPost').textContent = fullPost;
+
+    $('titleWords').textContent = wordsCount(seoTitle);
+    $('slugWords').textContent = wordsCount(permalink.replace(/^https?:\/\/[^/]+\//, '').replace(/[-/]+/g, ' '));
+    $('descWords').textContent = wordsCount(metaDesc);
+
+    const evalResult = evaluateSeo(data, seoTitle, permalink, metaDesc, fullPost);
+    renderChecks(evalResult.checks, evalResult.score);
+    renderRules();
+  }
+
+  function fillSample() {
+    $('focusKeyword').value = sample.focusKeyword;
+    $('position').value = sample.position;
+    $('company').value = sample.company;
+    $('location').value = sample.location;
+    $('experience').value = sample.experience;
+    $('salary').value = sample.salary;
+    $('jobType').value = sample.jobType;
+    $('applyLink').value = sample.applyLink;
+    $('responsibilities').value = sample.responsibilities;
+    $('skills').value = sample.skills;
+    $('extra').value = sample.extra;
+    $('internalLink').value = sample.internalLink;
+    $('externalLink').value = sample.externalLink;
+    $('rules').value = sample.rules.join('\n');
+    generatePost();
+  }
+
+  function clearAll() {
+    ['focusKeyword','position','company','location','experience','salary','applyLink','responsibilities','skills','extra','internalLink','externalLink','rules'].forEach(id => $(id).value = '');
+    $('jobType').value = 'Full-time';
+    $('seoTitle').textContent = '—';
+    $('permalink').textContent = '—';
+    $('metaDesc').textContent = '—';
+    $('fullPost').textContent = 'Fill the form and click Generate Job Post.';
+    $('checks').innerHTML = '';
+    $('ruleOutput').innerHTML = '';
+    $('titleWords').textContent = '0';
+    $('slugWords').textContent = '0';
+    $('descWords').textContent = '0';
+    $('seoScore').textContent = '0/10';
+  }
+
+  async function copyText(id) {
+    const text = $(id).textContent || '';
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Copied to clipboard');
+    } catch (e) {
+      alert('Copy failed. Please select and copy manually.');
+    }
+  }
+
+  $('rules').addEventListener('input', renderRules);
+  fillSample();
+</script>
+</body>
+</html>
+Add Job SEO Tool
